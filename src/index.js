@@ -11,7 +11,6 @@ import {
   deleteTodoitemForUser,
 } from "./database.js";
 import { createTokens, validateToken } from "./JWT.js";
-import send from "send";
 
 const corsOptions = {
   origin: "http://localhost:5173",
@@ -23,23 +22,25 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 
-app.post("/register", (req, res) => {
+app.post("/register", async (req, res) => {
   const { user_name, user_password } = req.body;
-  const user = getUser(user_name);
+  const user = await getUser(user_name);
   if (user) res.send({ UserError: "User taken!" });
-  bcrypt
-    .hash(user_password, 10)
-    .then((hash) => {
-      createUser(user_name, hash);
-    })
-    .then(() => {
-      res.send("user register");
-    })
-    .catch((err) => {
-      if (err) {
-        res.send({ error: err });
-      }
-    });
+  else {
+    bcrypt
+      .hash(user_password, 10)
+      .then((hash) => {
+        createUser(user_name, hash);
+      })
+      .then(() => {
+        res.send("user register");
+      })
+      .catch((err) => {
+        if (err) {
+          res.send({ error: err });
+        }
+      });
+  }
 });
 
 app.post("/login", async (req, res) => {
