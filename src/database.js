@@ -35,3 +35,32 @@ export async function getUser(user_name) {
   );
   return rows[0];
 }
+
+export async function addTodoItem(user_name, todo_item) {
+  await pool.query(
+    `
+  INSERT INTO todos (user_name, todo_item)
+  VALUES (?, ?)
+  `,
+    [user_name, todo_item]
+  );
+}
+
+export async function getTodoListForUser(user_name) {
+  const [rows] = await pool.query(
+    `SELECT todo_item
+    FROM todos
+    WHERE user_name = ?`,
+    [user_name]
+  );
+  return rows;
+}
+
+export async function deleteTodoitemForUser(user_name, todo_item) {
+  await pool.query(
+    `DELETE
+    FROM todos
+    WHERE user_name = ? AND todo_item = ?`,
+    [user_name, todo_item]
+  );
+}

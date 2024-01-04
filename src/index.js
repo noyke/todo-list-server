@@ -3,8 +3,15 @@ import bcrypt from "bcrypt";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
-import { getUser, createUser } from "./database.js";
+import {
+  getUser,
+  createUser,
+  addTodoItem,
+  getTodoListForUser,
+  deleteTodoitemForUser,
+} from "./database.js";
 import { createTokens, validateToken } from "./JWT.js";
+import send from "send";
 
 const corsOptions = {
   origin: "http://localhost:5173",
@@ -57,6 +64,26 @@ app.post("/login", async (req, res) => {
 
 app.get("/todos", validateToken, (req, res) => {
   res.send("User Authenticated");
+});
+
+app.post("/addtodo", async (req, res) => {
+  const { user_name, todo_item } = req.body;
+
+  await addTodoItem(user_name, todo_item);
+  res.send("todo added");
+});
+
+app.post("/gettodos", async (req, res) => {
+  const { user_name } = req.body;
+  const todoList = await getTodoListForUser(user_name);
+  res.send(todoList);
+});
+
+app.post("/deletetodo", async (req, res) => {
+  const { user_name, todo_item } = req.body;
+
+  await deleteTodoitemForUser(user_name, todo_item);
+  res.send("todo deleted");
 });
 
 app.listen(3000, () => {

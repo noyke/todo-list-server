@@ -7,8 +7,9 @@ CREATE TABLE users (
 );
 
 CREATE TABLE todos (
-    user_name VARCHAR(255) PRIMARY KEY,
-    todo_item VARCHAR(255) NOT NULL,
+    id integer PRIMARY KEY AUTO_INCREMENT,
+    user_name VARCHAR(255) NOT NULL,
+    todo_item VARCHAR(255) NOT NULL
 );
 
 INSERT INTO users (user_name, user_password)
