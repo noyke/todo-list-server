@@ -23,6 +23,7 @@ export const validateToken = (req, res, next) => {
     const validToken = jwt.verify(accessToken, process.env.JWT_SECRET);
     if (validToken) {
       req.authenticated = true;
+      req.userName = validToken.username;
       return next();
     }
   } catch (err) {

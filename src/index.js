@@ -48,7 +48,7 @@ app.post("/login", async (req, res) => {
 
   const user = await getUser(user_name);
 
-  if (!user) res.send({ UserError: "User doesn't exist!" });
+  if (!user) return res.send({ UserError: "User doesn't exist!" });
 
   const dbPassword = user.user_password;
 
@@ -63,26 +63,22 @@ app.post("/login", async (req, res) => {
   });
 });
 
-app.get("/todos", validateToken, (req, res) => {
-  res.send("User Authenticated");
-});
-
-app.post("/addtodo", async (req, res) => {
-  const { user_name, todo_item } = req.body;
-
+app.post("/addtodo", validateToken, async (req, res) => {
+  const { todo_item } = req.body;
+  const user_name = req.userName;
   await addTodoItem(user_name, todo_item);
   res.send("todo added");
 });
 
-app.post("/gettodos", async (req, res) => {
-  const { user_name } = req.body;
-  const todoList = await getTodoListForUser(user_name);
-  res.send(todoList);
+app.get("/todos", validateToken, async (req, res) => {
+  const userName = req.userName;
+  const todoList = await getTodoListForUser(userName);
+  res.send({ user_name: userName, todo_list: todoList });
 });
 
-app.post("/deletetodo", async (req, res) => {
-  const { user_name, todo_item } = req.body;
-
+app.post("/deletetodo", validateToken, async (req, res) => {
+  const { todo_item } = req.body;
+  const user_name = req.userName;
   await deleteTodoitemForUser(user_name, todo_item);
   res.send("todo deleted");
 });
